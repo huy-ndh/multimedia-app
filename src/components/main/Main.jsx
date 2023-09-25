@@ -1,22 +1,44 @@
-import { Box } from "@mui/material";
+import { Box, Grid } from "@mui/material";
 import React from "react";
+import OpenSource from "./openSource/OpenSource";
+import Input from "./input/Input";
 
 const Main = (props) => {
   return (
     <Box
       sx={{
         position: "absolute",
-        top: 100,
-        bottom: 120,
-        left: 0,
-        width: "95vw",
-        padding: 5,
-        height: "70vh",
-        // backgroundColor: "#AEAEAE",
-        // color: "white",
+        top: 50,
+        width: "100%",
+        height: "90%",
+        background: 'radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(148,187,233,1) 100%)'
       }}
     >
-      {props.children}
+      <Box
+        sx={{
+          padding: 2, 
+          px: 20, 
+        }}
+      >
+        <Box
+          sx={{
+            backgroundColor: '#FFFFFF',
+            borderRadius: 2,
+          }}
+        >
+          <Grid container sx={{ height: "100%", padding: 2 }}>
+          <Grid item xs={12} sx={{ marginBottom: 2 }}>
+            <Input></Input>
+          </Grid>
+          <Grid item xs={12} sx={{ marginBottom: 2 }}>
+            <OpenSource></OpenSource>
+          </Grid>
+          {/* <Grid item xs={12} sx={{ border: "2px solid #ECECEC" }}>
+            3
+          </Grid> */}
+        </Grid>
+        </Box>
+      </Box>
     </Box>
   );
 };
