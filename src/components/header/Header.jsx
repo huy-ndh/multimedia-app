@@ -2,17 +2,16 @@ import styled from "@emotion/styled";
 import { Box } from "@mui/material";
 import React from "react";
 
-
 const Tab = styled(Box)(() => ({
   width: 100,
-  textAlign: 'center',
+  textAlign: "center",
   paddingTop: 7,
-  color: '#ACACAC',
+  color: "#ACACAC",
   fontSize: 20,
 }));
 
 export default function Header(props) {
-  const { title } = props
+  const { title } = props;
   return (
     <Box
       sx={{
@@ -21,16 +20,16 @@ export default function Header(props) {
         left: 0,
         py: 1,
         height: 40,
-        width: '100%',
+        width: "100%",
         fontSize: 26,
-        fontWeight: 'bold',
+        fontWeight: "bold",
         backgroundColor: "#FFFFFF",
         color: "#554D78",
-        textAlign: 'left',
+        textAlign: "left",
         zIndex: 10,
       }}
     >
-      <Box sx={{ paddingLeft: 10, display: 'flex' }}>
+      <Box sx={{ paddingLeft: 19, display: "flex" }}>
         <Box
           component="img"
           sx={{
