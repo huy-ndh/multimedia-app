@@ -1,4 +1,4 @@
-import { Box, Button, MenuItem, Select, TextField, ToggleButton, ToggleButtonGroup } from "@mui/material";
+import { Box, Button, TextField, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import React from "react";
 
 function isUrlValid(userInput) {
@@ -11,7 +11,7 @@ function isUrlValid(userInput) {
 }
 
 export default function Input(props) {
-    //   const {  } = props
+    const { handleSubmit, dataForm } = props
     const [link, setLink] = React.useState("");
     const [openLyric, setOpenLyric] = React.useState(false);
     const [mode, setMode] = React.useState(1);
@@ -114,6 +114,9 @@ export default function Input(props) {
                         {openLyric ? "Remove lyrics" : "Add lyrics"}
                     </Button>
                     <Button
+                        onClick={()=>{
+                            handleSubmit(dataForm)
+                        }}
                         sx={{
                             backgroundColor: "#F04874",
                             color: "#FFFFFF",

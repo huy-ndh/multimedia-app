@@ -4,7 +4,88 @@ import OpenSource from "./openSource/OpenSource";
 import Input from "./input/Input";
 import CustomizedTimeline from "./timeline/TimeLine";
 
+const SEVER_URL = "http://localhost:8000"
+
 const Main = (props) => {
+  const [dataForm, setDataForm] = React.useState(
+    {
+      "name": "string",
+      "link": "",
+      "lyrics": "",
+      "status": 0,
+      "task_id": "",
+      "logs": [],
+      "files": {
+        "karaoke_video": "",
+        "lyrics_video": ""
+      }
+    }
+  )
+  const [taskId, setTaskId] = React.useState(null)
+  const [logs, setLogs] = React.useState([])
+  const [files, setFiles] = React.useState([])
+
+  const handleSubmit = async (data_form) => {
+    await fetch(`${SEVER_URL}/tasks/`, {
+      method: 'POST',
+      body: JSON.stringify(data_form),
+      headers: {
+        'Content-type': 'application/json',
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data)
+        setTaskId(data?.task_id)
+      })
+      .catch((err) => {
+        console.log(err.message);
+      })
+  }
+
+  const getStatus = async (id) => {
+    await fetch(`${SEVER_URL}/tasks/${id}`, {
+      method: 'GET',
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setLogs(transform(data?.item?.logs))
+        setFiles(data?.item?.files)
+        if(data?.item?.status === 5) {
+          setTaskId(null)
+        }
+      })
+      .catch((err) => {
+        console.log(err.message);
+      })
+  }
+
+  const transform = (logs) => {
+    let array = []
+    for(let i = 0; i< logs.length; i++) {
+      let data = logs[i].split("\t")
+      const log = {
+        "timestamp": data[0],
+        "status": data[1].replace("Status: ", ""),
+        "message": data[2]
+      }
+      array.push(log)
+    }
+
+    return array
+  }
+
+  React.useEffect(() => {
+    if(taskId) {
+      const intervalCall = setInterval(() => {
+        getStatus(taskId)
+      }, 3000);
+      return () => {
+        clearInterval(intervalCall);
+      }
+    }
+  }, [taskId])
+
   return (
     <Box
       sx={{
@@ -30,10 +111,10 @@ const Main = (props) => {
         >
           <Grid container sx={{ height: "100%", padding: 2 }}>
             <Grid item xs={12} sx={{ marginBottom: 2 }}>
-              <Input></Input>
+              <Input handleSubmit={handleSubmit} dataForm={dataForm} setDataForm={setDataForm} />
             </Grid>
             <Grid item xs={12} sx={{ marginBottom: 2 }}>
-              <CustomizedTimeline />
+              <CustomizedTimeline logs={logs} files={files}/>
             </Grid>
             <Grid item xs={12} sx={{ marginBottom: 2 }}>
               <OpenSource></OpenSource>
