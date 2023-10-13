@@ -1,20 +1,25 @@
 import { Box, Button, TextField, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import React from "react";
+import ReactPlayer from "react-player";
 
-function isUrlValid(userInput) {
-    const regex =
-        // eslint-disable-next-line
-        /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g;
-    var res = userInput.match(regex);
-    if (res == null) return false;
-    else return true;
+function isLyrics(lyrics) {
+    // eslint-disable-next-line
+    const regex = /\r|\n/
+    if (lyrics.trim() === "") 
+        return false
+    
+        var res = lyrics.match(regex)
+    if (res == null) 
+        return false
+    
+    return true
 }
 
 export default function Input(props) {
-    const { handleSubmit, dataForm } = props
+    const { handleSubmit, dataForm, setDataForm } = props
     const [link, setLink] = React.useState("");
-    const [openLyric, setOpenLyric] = React.useState(false);
-    const [mode, setMode] = React.useState(1);
+    const [lyrics, setLyrics] = React.useState("");
+    const [mode, setMode] = React.useState(0);
 
     return (
         <Box
@@ -37,6 +42,9 @@ export default function Input(props) {
                     value={link}
                     onChange={(e) => {
                         setLink(e.target.value);
+                        setDataForm({
+                            ...dataForm,
+                            link: e.target.value})
                     }}
                     sx={{
                         width: 500,
@@ -49,20 +57,27 @@ export default function Input(props) {
                     InputProps={{
                         disableUnderline: true,
                     }}
-
                 />
             </Box>
-            {openLyric && (
+            {!ReactPlayer.canPlay(link) && link.length > 0 && (
+                <Box sx={{ fontSize: 12 }}>
+                    Link not found Video
+                </Box>
+            )}
+            <Box>
+            {ReactPlayer.canPlay(link) && (
                 <TextField
                     fullWidth
                     hiddenLabel
                     placeholder="Lyrics Music"
                     multiline
                     maxRows={5}
-                    // value={link}
-                    // onChange={(e)=>{
-                    //     setLink(e.target.value)
-                    // }}
+                    onChange={(e) => {
+                        setLyrics(e.target.value);
+                        setDataForm({
+                            ...dataForm,
+                            lyrics: e.target.value})
+                    }}
                     sx={{
                         width: 500,
                         height: 120,
@@ -78,7 +93,13 @@ export default function Input(props) {
                     }}
                 />
             )}
-            {isUrlValid(link) ? (
+            {/* {ReactPlayer.canPlay(link) && (
+                <Box>
+                    <ReactPlayer url={link} width="480px" height="240px"/>
+                </Box>
+            )} */}
+            </Box>
+            {ReactPlayer.canPlay(link) && (
                 <Box>
                     <Box>
                         <ToggleButtonGroup
@@ -88,6 +109,10 @@ export default function Input(props) {
                             exclusive
                             onChange={(e, value) => {
                                 setMode(value)
+                                setDataForm({
+                                    ...dataForm,
+                                    mode: value
+                                })
                             }}
                             sx={{
                                 background: "#FFFFFF"
@@ -99,24 +124,10 @@ export default function Input(props) {
                         </ToggleButtonGroup>
                     </Box>
                     <Button
-                        onClick={() => {
-                            setOpenLyric(!openLyric);
-                        }}
-                        sx={{
-                            backgroundColor: "#FFFFFF",
-                            minWidth: 187,
-                            mr: 3,
-                            "&:hover": {
-                                backgroundColor: "#FFFFFF",
-                            },
-                        }}
-                    >
-                        {openLyric ? "Remove lyrics" : "Add lyrics"}
-                    </Button>
-                    <Button
                         onClick={()=>{
                             handleSubmit(dataForm)
                         }}
+                        disabled={!isLyrics(lyrics)}
                         sx={{
                             backgroundColor: "#F04874",
                             color: "#FFFFFF",
@@ -129,17 +140,6 @@ export default function Input(props) {
                         Submit
                     </Button>
                 </Box>
-            ) : link.length ? (
-                <Box
-                    sx={{
-                        fontSize: 18,
-                        fontWeight: 0,
-                    }}
-                >
-                    Link not found
-                </Box>
-            ) : (
-                <></>
             )}
         </Box>
     );

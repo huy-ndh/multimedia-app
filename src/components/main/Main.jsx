@@ -3,8 +3,9 @@ import React from "react";
 import OpenSource from "./openSource/OpenSource";
 import Input from "./input/Input";
 import CustomizedTimeline from "./timeline/TimeLine";
+import configs from "../../configs"
 
-const SEVER_URL = "http://localhost:8000"
+const API_URL = configs.API_URL
 
 const Main = (props) => {
   const [dataForm, setDataForm] = React.useState(
@@ -13,6 +14,7 @@ const Main = (props) => {
       "link": "",
       "lyrics": "",
       "status": 0,
+      "mode": 0,
       "task_id": "",
       "logs": [],
       "files": {
@@ -24,9 +26,11 @@ const Main = (props) => {
   const [taskId, setTaskId] = React.useState(null)
   const [logs, setLogs] = React.useState([])
   const [files, setFiles] = React.useState([])
+  const [submitted, setSubmitted] = React.useState(false)
 
   const handleSubmit = async (data_form) => {
-    await fetch(`${SEVER_URL}/tasks/`, {
+    console.log(data_form)
+    await fetch(`${API_URL}/tasks/`, {
       method: 'POST',
       body: JSON.stringify(data_form),
       headers: {
@@ -37,6 +41,7 @@ const Main = (props) => {
       .then((data) => {
         console.log(data)
         setTaskId(data?.task_id)
+        setSubmitted(true)
       })
       .catch((err) => {
         console.log(err.message);
@@ -44,14 +49,15 @@ const Main = (props) => {
   }
 
   const getStatus = async (id) => {
-    await fetch(`${SEVER_URL}/tasks/${id}`, {
+    await fetch(`${API_URL}/tasks/${id}`, {
       method: 'GET',
     })
       .then((response) => response.json())
       .then((data) => {
-        setLogs(transform(data?.item?.logs))
+        setDataForm(data?.item)
         setFiles(data?.item?.files)
-        if(data?.item?.status === 5) {
+        setLogs(transform(data?.item?.logs))
+        if (data?.item?.status >= 5) {
           setTaskId(null)
         }
       })
@@ -62,7 +68,7 @@ const Main = (props) => {
 
   const transform = (logs) => {
     let array = []
-    for(let i = 0; i< logs.length; i++) {
+    for (let i = 0; i < logs.length; i++) {
       let data = logs[i].split("\t")
       const log = {
         "timestamp": data[0],
@@ -76,7 +82,7 @@ const Main = (props) => {
   }
 
   React.useEffect(() => {
-    if(taskId) {
+    if (taskId) {
       const intervalCall = setInterval(() => {
         getStatus(taskId)
       }, 3000);
@@ -84,7 +90,10 @@ const Main = (props) => {
         clearInterval(intervalCall);
       }
     }
+    // eslint-disable-next-line
   }, [taskId])
+
+  // console.log(dataForm)
 
   return (
     <Box
@@ -106,22 +115,44 @@ const Main = (props) => {
         <Box
           sx={{
             backgroundColor: "#FFFFFF",
+            // background: 'linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%)',
             borderRadius: 2,
           }}
         >
+          <Box
+            component="img"
+            sx={{
+              height: 120,
+              marginTop: 3,
+            }}
+            alt="Logo"
+            src="https://i.ibb.co/Jkgqccf/logo.png"
+          />
+          <Box sx={{
+            fontSize: 30,
+            fontWeight: "bold",
+            backgroundColor: "#FFFFFF",
+            color: "#554D78",
+          }}>
+            LyricMagic Pro
+          </Box>
           <Grid container sx={{ height: "100%", padding: 2 }}>
             <Grid item xs={12} sx={{ marginBottom: 2 }}>
-              <Input handleSubmit={handleSubmit} dataForm={dataForm} setDataForm={setDataForm} />
+              {!submitted && (
+                <Input handleSubmit={handleSubmit} dataForm={dataForm} setDataForm={setDataForm} />
+              )}
             </Grid>
-            <Grid item xs={12} sx={{ marginBottom: 2 }}>
-              <CustomizedTimeline logs={logs} files={files}/>
-            </Grid>
+            {submitted && (
+              <Grid item xs={12} sx={{ marginBottom: 2 }}>
+                <CustomizedTimeline mode={dataForm.mode} status={dataForm.status} link={dataForm.link} logs={logs} files={files} />
+              </Grid>
+            )}
             <Grid item xs={12} sx={{ marginBottom: 2 }}>
               <OpenSource></OpenSource>
             </Grid>
-            <Grid item xs={12} sx={{ border: "2px solid #ECECEC" }}>
+            {/* <Grid item xs={12} sx={{ border: "2px solid #ECECEC" }}>
               About Us
-            </Grid>
+            </Grid> */}
           </Grid>
         </Box>
       </Box>

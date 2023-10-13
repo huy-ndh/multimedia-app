@@ -36,15 +36,6 @@ export default function Header(props) {
             height: 40,
             marginRight: 1,
           }}
-          alt=""
-          src="logo.png"
-        />
-        <Box
-          component="img"
-          sx={{
-            height: 40,
-            marginRight: 1,
-          }}
           alt="Logo"
           src="https://i.ibb.co/Jkgqccf/logo.png"
         />
