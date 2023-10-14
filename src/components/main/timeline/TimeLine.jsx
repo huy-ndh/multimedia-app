@@ -184,6 +184,7 @@ export default function CustomizedTimeline(props) {
                     <Grid container sx={{ mt: 1 }}>
                         {status === 5 && (mode === 0 || mode === 1) && (
                             <Grid item xs={mode === 1 ? 12 : 6}>
+                                Lyrics Video
                                 <iframe
                                     title="Embedded Web Page"
                                     src={`${API_URL}/video/?path=${files.lyrics_video}`}
@@ -194,6 +195,7 @@ export default function CustomizedTimeline(props) {
                         )}
                         {status === 5 && (mode === 0 || mode === 2) && (
                             <Grid item xs={mode === 2 ? 12 : 6}>
+                                Karaoke Video
                                 <iframe
                                     title="Embedded Web Page"
                                     src={`${API_URL}/video/?path=${files.karaoke_video}`}
